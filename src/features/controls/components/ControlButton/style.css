@@ -1,0 +1,18 @@
+.control {
+  width: 3rem;
+  height: 3rem;
+}
+
+.control:active,
+.control.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.control:active,
+.control.active:active {
+  background: #10df10;
+}
+.control.active {
+  background: #1ff91f;
+}
