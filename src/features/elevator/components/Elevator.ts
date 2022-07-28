@@ -2,11 +2,11 @@ import { FLOOR, BUILDING, BASE, DOOR } from "../constants";
 import { Arc, Rect } from "../types";
 
 class Elevator {
-  private outer: Rect;
+  private outerBg: Rect;
   private innerBg: Rect;
-  private innerDoor: Rect;
+  private door: Rect;
   private arc: Arc;
-  private signRadius = 2;
+  private arcRadius = 2;
   private dy = -1;
   private limitY = {
     top: FLOOR.rowGap,
@@ -14,7 +14,7 @@ class Elevator {
   };
 
   constructor(public ctx: CanvasRenderingContext2D) {
-    this.outer = {
+    this.outerBg = {
       x: (BUILDING.width - (DOOR.width + DOOR.border * 2)) / 2,
       y: this.limitY.bottom,
       width: DOOR.width + DOOR.border * 2,
@@ -23,14 +23,14 @@ class Elevator {
     };
 
     this.innerBg = {
-      x: this.outer.x + DOOR.border,
-      y: this.outer.y + DOOR.border * 3,
-      width: this.outer.width - DOOR.border * 2,
-      height: this.outer.height - DOOR.border * 4,
+      x: this.outerBg.x + DOOR.border,
+      y: this.outerBg.y + DOOR.border * 3,
+      width: this.outerBg.width - DOOR.border * 2,
+      height: this.outerBg.height - DOOR.border * 4,
       fillStyle: "#fff",
     };
 
-    this.innerDoor = {
+    this.door = {
       x: this.innerBg.x,
       y: this.innerBg.y,
       width: (this.innerBg.width * 2) / 3,
@@ -39,12 +39,14 @@ class Elevator {
     };
 
     this.arc = {
-      radius: this.signRadius,
-      x: this.outer.x + this.outer.width / 2,
-      y: this.outer.y + DOOR.border + this.signRadius,
+      radius: this.arcRadius,
+      x: this.outerBg.x + this.outerBg.width / 2,
+      y: this.outerBg.y + DOOR.border + this.arcRadius,
       strokeStyle: "#1ff91f",
     };
   }
+
+  open() {}
 
   // a Promise-based wrapper around "_moveToNextFloorWithCb"
   moveToNextFloor(dir: "up" | "down") {
@@ -78,40 +80,40 @@ class Elevator {
   }
 
   private _updatePositionY() {
-    this.outer.y += this.dy;
+    this.outerBg.y += this.dy;
     this.innerBg.y += this.dy;
-    this.innerDoor.y += this.dy;
+    this.door.y += this.dy;
     this.arc.y += this.dy;
   }
 
   clear() {
     this.ctx.fillStyle = "#40e0d0";
     this.ctx.fillRect(
-      this.outer.x,
-      this.outer.y,
-      this.outer.width,
-      this.outer.height
+      this.outerBg.x,
+      this.outerBg.y,
+      this.outerBg.width,
+      this.outerBg.height
     );
   }
 
   draw() {
-    this._drawOuter();
-    this._drawInnerBacground();
-    this._drawInnerDoor();
+    this._drawOuterBackground();
+    this._drawInnerBackground();
+    this._drawDoor();
     this._drawArc();
   }
 
-  private _drawOuter() {
-    this.ctx.fillStyle = this.outer.fillStyle;
+  private _drawOuterBackground() {
+    this.ctx.fillStyle = this.outerBg.fillStyle;
     this.ctx.fillRect(
-      this.outer.x,
-      this.outer.y,
-      this.outer.width,
-      this.outer.height
+      this.outerBg.x,
+      this.outerBg.y,
+      this.outerBg.width,
+      this.outerBg.height
     );
   }
 
-  private _drawInnerBacground() {
+  private _drawInnerBackground() {
     this.ctx.fillStyle = this.innerBg.fillStyle;
     this.ctx.fillRect(
       this.innerBg.x,
@@ -121,13 +123,13 @@ class Elevator {
     );
   }
 
-  private _drawInnerDoor() {
-    this.ctx.fillStyle = this.innerDoor.fillStyle;
+  private _drawDoor() {
+    this.ctx.fillStyle = this.door.fillStyle;
     this.ctx.fillRect(
-      this.innerDoor.x,
-      this.innerDoor.y,
-      this.innerDoor.width,
-      this.innerDoor.height
+      this.door.x,
+      this.door.y,
+      this.door.width,
+      this.door.height
     );
   }
 

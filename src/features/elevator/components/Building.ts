@@ -1,3 +1,4 @@
+import { waitFor } from "../../../common/utils";
 import { BASE, BUILDING, DOOR, FLOOR, FLOOR_COUNT } from "../constants";
 import Elevator from "./Elevator";
 
@@ -120,17 +121,11 @@ class Building {
     );
   }
 
-  private _drawElevator() {
+  private async _drawElevator() {
     const elevator = new Elevator(this.ctx);
     elevator.draw();
-    // let dir: "up" | "down" = "up";
-    // for (let i = 0; i < 50; i++) {
-    //   console.log({ i, c: (i % FLOOR_COUNT) + 1 });
-    //   if ((i + 1) % FLOOR_COUNT === 0) dir = "up";
-    //   if ((i % FLOOR_COUNT) + 1 === 7) dir = "down";
-    //   await waitFor(2000);
-    //   await elevator.moveToNextFloor(dir);
-    // }
+    await waitFor(2000);
+    await elevator.moveToNextFloor("up");
   }
 }
 
