@@ -126,6 +126,10 @@ class Building {
     elevator.draw();
     await waitFor(2000);
     await elevator.moveToNextFloor("up");
+    await waitFor(1000);
+    await elevator.open();
+    await waitFor(1500);
+    await elevator.close();
   }
 }
 

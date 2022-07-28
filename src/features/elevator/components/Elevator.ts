@@ -33,7 +33,7 @@ class Elevator {
     this.door = {
       x: this.innerBg.x,
       y: this.innerBg.y,
-      width: (this.innerBg.width * 2) / 3,
+      width: this.innerBg.width,
       height: this.innerBg.height,
       fillStyle: "#bbb",
     };
@@ -46,7 +46,43 @@ class Elevator {
     };
   }
 
-  open() {}
+  open() {
+    return new Promise((resolve) => this._openWithCb(() => resolve(null)));
+  }
+
+  private _openWithCb(cb?: () => void) {
+    const openDoor = () => {
+      if (this.door.width > 0) {
+        this.door.width -= 1;
+
+        this.clear();
+        this.draw();
+        requestAnimationFrame(openDoor);
+      } else {
+        cb?.();
+      }
+    };
+    openDoor();
+  }
+
+  close() {
+    return new Promise((resolve) => this._closeWithCb(() => resolve(null)));
+  }
+
+  private _closeWithCb(cb?: () => void) {
+    const closeDoor = () => {
+      if (this.door.width < this.innerBg.width) {
+        this.door.width += 1;
+
+        this.clear();
+        this.draw();
+        requestAnimationFrame(closeDoor);
+      } else {
+        cb?.();
+      }
+    };
+    closeDoor();
+  }
 
   // a Promise-based wrapper around "_moveToNextFloorWithCb"
   moveToNextFloor(dir: "up" | "down") {
