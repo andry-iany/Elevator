@@ -55,7 +55,7 @@ class Elevator {
       if (this.door.width > 0) {
         this.door.width -= 1;
 
-        this.clear();
+        this._clear();
         this.draw();
         requestAnimationFrame(openDoor);
       } else {
@@ -74,7 +74,7 @@ class Elevator {
       if (this.door.width < this.innerBg.width) {
         this.door.width += 1;
 
-        this.clear();
+        this._clear();
         this.draw();
         requestAnimationFrame(closeDoor);
       } else {
@@ -101,7 +101,7 @@ class Elevator {
     const move = () => {
       distanceCleared += this.dy;
 
-      this.clear();
+      this._clear();
       this._updatePositionY();
       this.draw();
 
@@ -122,7 +122,7 @@ class Elevator {
     this.arc.y += this.dy;
   }
 
-  clear() {
+  private _clear() {
     this.ctx.fillStyle = "#40e0d0";
     this.ctx.fillRect(
       this.outerBg.x,
