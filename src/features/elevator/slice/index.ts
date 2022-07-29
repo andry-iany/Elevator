@@ -4,7 +4,6 @@ import { ElevatorState } from "../types";
 
 const initialState: ElevatorState = {
   lastFloorWhereIdle: 0,
-  status: "idle",
   inSameDir: [],
   inOppositeDir: [],
 };
@@ -65,8 +64,6 @@ const selectElevatorState = (state: RootState) => state.elevator;
 export const selectNextFloor = createSelector(selectElevatorState, (state) =>
   getNextFloor(state)
 );
-
-export const selectElevatorStatus = (state: RootState) => state.elevator.status;
 
 export const selectIsElevatorRequestedAt = createSelector(
   [selectElevatorState, (_, floor: number) => floor],

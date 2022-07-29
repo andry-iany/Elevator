@@ -23,7 +23,6 @@ export type Arc = Point & WithRadius & WithStrokeStyle;
 // elevator state
 export interface ElevatorState {
   lastFloorWhereIdle: number;
-  status: "moving" | "idle";
   inSameDir: number[];
   inOppositeDir: number[];
 }

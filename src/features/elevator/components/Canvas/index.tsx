@@ -3,10 +3,6 @@ import { BUILDING } from "../../constants";
 import { useMoveElevator, useSelectNextFloor } from "../../hooks";
 import Building from "../Building";
 
-// THE USEEFFECT HOOK RUNS TWICE FOR SOME REASON THOUGH WE DON'T WANT TO RUN IT ONCE
-// THIS IS JUST A WORKAROUND FOR NOW
-let run = false;
-
 const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dispatchElevatorMoved = useMoveElevator();
@@ -14,10 +10,6 @@ const Canvas = () => {
   const nextFloor = useSelectNextFloor();
 
   useEffect(() => {
-    // WORKAROUND
-    if (run) return;
-    run = true;
-
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
