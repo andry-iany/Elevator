@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BUILDING } from "../../constants";
+import { useMoveElevator, useSelectNextFloor } from "../../hooks";
 import Building from "../Building";
 
 // THE USEEFFECT HOOK RUNS TWICE FOR SOME REASON THOUGH WE DON'T WANT TO RUN IT ONCE
@@ -8,6 +9,9 @@ let run = false;
 
 const Canvas = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const dispatchElevatorMoved = useMoveElevator();
+  const [building, setBuilding] = useState<Building | null>(null);
+  const nextFloor = useSelectNextFloor();
 
   useEffect(() => {
     // WORKAROUND
@@ -24,7 +28,13 @@ const Canvas = () => {
     // draw building
     const building = new Building(ctx);
     building.draw();
+    setBuilding(building);
   }, [canvasRef.current]);
+
+  useEffect(() => {
+    if (!building || nextFloor === undefined) return;
+    building.moveElevatorTo(nextFloor).then(() => dispatchElevatorMoved());
+  }, [building, nextFloor]);
 
   return (
     <div className="w-100 ">

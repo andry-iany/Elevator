@@ -11,7 +11,7 @@ const Controls: FC<ControlsProps> = ({ maxFloor }) => {
   for (let i = maxFloor; i >= 0; i--) {
     controls.push(
       <Col key={i} className="py-2 px-0">
-        <ControlButton text={i || "T"} />
+        <ControlButton floor={i} />
       </Col>
     );
   }
