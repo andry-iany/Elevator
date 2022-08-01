@@ -1,5 +1,5 @@
 import { FLOOR, BUILDING, BASE, DOOR } from "../constants";
-import { Arc, Rect } from "../types";
+import { Arc, Direction, Rect } from "../types";
 
 class Elevator {
   private outerBg: Rect;
@@ -85,7 +85,7 @@ class Elevator {
   }
 
   // a Promise-based wrapper around "_moveToNextFloorWithCb"
-  moveToNextFloor(dir: "up" | "down") {
+  moveToNextFloor(dir: Direction) {
     return new Promise((resolve) => {
       this._moveToNextFloorWithCb(dir, () => resolve(null));
     });
@@ -93,10 +93,10 @@ class Elevator {
 
   // moves the elevator to the next floor up or down
   // invokes the callback once it's done
-  private _moveToNextFloorWithCb(dir: "up" | "down", cb?: () => void) {
+  private _moveToNextFloorWithCb(dir: Direction, cb?: () => void) {
     // to avoid dirtying the global variable
     let distanceCleared = 0;
-    this.dy = dir === "up" ? -2 : 2;
+    this.dy = dir === "ascending" ? -2 : 2;
 
     const move = () => {
       distanceCleared += this.dy;

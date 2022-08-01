@@ -20,9 +20,13 @@ export type Rect = Point & Size & WithFillStyle;
 
 export type Arc = Point & WithRadius & WithStrokeStyle;
 
+export type Direction = "ascending" | "descending";
+
 // elevator state
 export interface ElevatorState {
-  lastFloorWhereIdle: number;
-  inSameDir: number[];
-  inOppositeDir: number[];
+  currentFloor: number;
+  status: Direction | "idle";
+  isFloorReached: boolean;
+  toAscendTo: number[];
+  toDescendTo: number[];
 }

@@ -3,9 +3,11 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   elevatorMoved,
   elevatorRequested,
-  selectAllNextMoves,
   selectIsElevatorRequestedAt,
+  selectElevatorStatus,
   selectNextFloor,
+  selectIsFloorReached,
+  elevatorOpenedThenClosed,
 } from "../slice";
 
 export const useRequestElevator = () => {
@@ -29,12 +31,25 @@ export const useMoveElevator = () => {
   return moveElevator;
 };
 
+export const useOpenThenCloseElevator = () => {
+  const dispatch = useAppDispatch();
+  const openThenCloseElevator = useCallback(() => {
+    dispatch(elevatorOpenedThenClosed());
+  }, [dispatch, elevatorOpenedThenClosed]);
+
+  return openThenCloseElevator;
+};
+
 export const useIsElevatorRequestedAt = (floor: number) => {
   return useAppSelector((state) => selectIsElevatorRequestedAt(state, floor));
 };
 
-export const useSelectAllNextMoves = () => {
-  return useAppSelector((state) => selectAllNextMoves(state));
+export const useSelectIsFloorReached = () => {
+  return useAppSelector((state) => selectIsFloorReached(state));
+};
+
+export const useSelectElevatorStatus = () => {
+  return useAppSelector((state) => selectElevatorStatus(state));
 };
 
 export const useSelectNextFloor = () => {

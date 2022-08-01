@@ -1,49 +1,81 @@
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { ElevatorState } from "../types";
 
 const initialState: ElevatorState = {
-  lastFloorWhereIdle: 0,
-  inSameDir: [],
-  inOppositeDir: [],
+  currentFloor: 0,
+  isFloorReached: false,
+  status: "idle",
+  toAscendTo: [],
+  toDescendTo: [],
 };
 
-const elevatorSlice = createSlice({
+const slice = createSlice({
   name: "elevator",
   initialState,
   reducers: {
     elevatorRequested(state: ElevatorState, action: PayloadAction<number>) {
-      const nextFloor = getNextFloor(state);
+      const direction = getDirection(state, action.payload);
+      const toFloor = action.payload;
 
-      const isFirstMove = nextFloor === undefined;
-      const isInSameDir =
-        Math.sign(state.lastFloorWhereIdle - Number(nextFloor)) ===
-        Math.sign(state.lastFloorWhereIdle - action.payload);
+      if (!direction) return;
 
-      if (isFirstMove || isInSameDir) {
-        state.inSameDir = addUnique(state.inSameDir, action.payload);
+      if (shouldAscend(direction)) {
+        state.toAscendTo = addUnique(state.toAscendTo, toFloor).sort(
+          (a, b) => a - b
+        );
       } else {
-        state.inOppositeDir = addUnique(state.inOppositeDir, action.payload);
+        state.toDescendTo = addUnique(state.toDescendTo, toFloor).sort(
+          (a, b) => b - a
+        );
       }
 
-      console.log("same", [...state.inSameDir], "opposite", [
-        ...state.inOppositeDir,
-      ]);
+      // update status
+      if (state.status === "idle") state.status = direction;
     },
-
     elevatorMoved(state: ElevatorState) {
-      console.log("moved.");
-      console.log("Before:", [...state.inSameDir], [...state.inOppositeDir]);
+      // update current floor
+      const dy = state.status === "ascending" ? 1 : -1;
+      state.currentFloor += dy;
 
-      if (state.inSameDir.length > 0) {
-        state.inSameDir.shift();
-      } else {
-        state.inOppositeDir.shift();
+      // remove the floor if present
+      if (
+        state.toAscendTo[0] === state.currentFloor ||
+        state.toDescendTo[0] === state.currentFloor
+      ) {
+        state.isFloorReached = true;
       }
-      console.log("After:", [...state.inSameDir], [...state.inOppositeDir]);
+    },
+    elevatorOpenedThenClosed(state: ElevatorState) {
+      if (state.toAscendTo[0] === state.currentFloor) {
+        state.toAscendTo.shift();
+      } else if (state.toDescendTo[0] === state.currentFloor) {
+        state.toDescendTo.shift();
+      }
+
+      // reset
+      state.isFloorReached = false;
+
+      // update direction
+      if (state.toAscendTo.length > 0) {
+        state.status = "ascending";
+      } else if (state.toDescendTo.length > 0) {
+        state.status = "descending";
+      } else {
+        state.status = "idle";
+      }
     },
   },
 });
+
+function getDirection(state: ElevatorState, toFloor: number) {
+  if (state.currentFloor === toFloor) return undefined;
+  return state.currentFloor < toFloor ? "ascending" : "descending";
+}
+
+function shouldAscend(direction: "ascending" | "descending") {
+  return direction === "ascending";
+}
 
 // not optimal but works for smaller number
 function addUnique<T>(arr: T[], value: T) {
@@ -51,30 +83,32 @@ function addUnique<T>(arr: T[], value: T) {
   return Array.from(set);
 }
 
-function getNextFloor(state: ElevatorState) {
-  return state.inSameDir[0] ?? state.inOppositeDir[0];
-}
+export default slice.reducer;
 
-export default elevatorSlice.reducer;
+export const { elevatorRequested, elevatorMoved, elevatorOpenedThenClosed } =
+  slice.actions;
 
-export const { elevatorRequested, elevatorMoved } = elevatorSlice.actions;
+export const selectIsElevatorRequestedAt = (
+  state: RootState,
+  floor: number
+) => {
+  const elevator = state.elevator;
+  return (
+    elevator.toAscendTo.includes(floor) || elevator.toDescendTo.includes(floor)
+  );
+};
 
-const selectElevatorState = (state: RootState) => state.elevator;
+export const selectElevatorStatus = (state: RootState) => state.elevator.status;
+export const selectIsFloorReached = (state: RootState) =>
+  state.elevator.isFloorReached;
 
-export const selectNextFloor = createSelector(selectElevatorState, (state) =>
-  getNextFloor(state)
-);
+export const selectNextFloor = (state: RootState) => {
+  const status = selectElevatorStatus(state);
 
-export const selectIsElevatorRequestedAt = createSelector(
-  [selectElevatorState, (_, floor: number) => floor],
-  (state, floor) => {
-    return (
-      state.inSameDir.includes(floor) || state.inOppositeDir.includes(floor)
-    );
+  if (status === "ascending") {
+    return state.elevator.currentFloor + 1;
+  } else if (status === "descending") {
+    return state.elevator.currentFloor - 1;
   }
-);
-
-export const selectAllNextMoves = createSelector(
-  [selectElevatorState],
-  (state) => state.inSameDir.concat(state.inOppositeDir)
-);
+  return undefined;
+};

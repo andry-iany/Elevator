@@ -3,7 +3,8 @@ import { BASE, BUILDING, DOOR, FLOOR, FLOOR_COUNT } from "../constants";
 import Elevator from "./Elevator";
 
 class Building {
-  private elevator: Elevator;
+  elevator: Elevator;
+
   constructor(public ctx: CanvasRenderingContext2D) {
     this.elevator = new Elevator(this.ctx);
   }
@@ -128,23 +129,11 @@ class Building {
     this.elevator.draw();
   }
 
-  currentFloor = 0;
-
-  async moveElevatorTo(floor: number) {
-    await waitFor(1000);
-
-    let count = floor - this.currentFloor;
-    const dir = count > 0 ? "up" : "down";
-    for (let i = 0; i < Math.abs(count); i++) {
-      await this.elevator.moveToNextFloor(dir);
-    }
-
-    await waitFor(1000);
+  async openThenCloseElevator() {
+    await waitFor(200);
     await this.elevator.open();
-    await waitFor(1000);
+    await waitFor(2000);
     await this.elevator.close();
-
-    this.currentFloor = floor;
   }
 }
 
