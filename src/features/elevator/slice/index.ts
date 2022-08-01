@@ -31,8 +31,10 @@ const slice = createSlice({
       }
 
       // update status
-      if (state.status === "idle") state.status = direction;
+      if (state.status === "idle" && !state.isFloorReached)
+        state.status = direction;
     },
+
     elevatorMoved(state: ElevatorState) {
       // update current floor
       const dy = state.status === "ascending" ? 1 : -1;
@@ -44,6 +46,7 @@ const slice = createSlice({
         state.toDescendTo[0] === state.currentFloor
       ) {
         state.isFloorReached = true;
+        state.status = "idle";
       }
     },
     elevatorOpenedThenClosed(state: ElevatorState) {
@@ -61,8 +64,6 @@ const slice = createSlice({
         state.status = "ascending";
       } else if (state.toDescendTo.length > 0) {
         state.status = "descending";
-      } else {
-        state.status = "idle";
       }
     },
   },
@@ -99,6 +100,8 @@ export const selectIsElevatorRequestedAt = (
 };
 
 export const selectElevatorStatus = (state: RootState) => state.elevator.status;
+export const selectCurrentFloor = (state: RootState) =>
+  state.elevator.currentFloor;
 export const selectIsFloorReached = (state: RootState) =>
   state.elevator.isFloorReached;
 

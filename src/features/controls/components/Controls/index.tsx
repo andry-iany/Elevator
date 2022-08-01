@@ -3,12 +3,12 @@ import { Col, Row } from "react-bootstrap";
 import ControlButton from "../ControlButton";
 
 interface ControlsProps {
-  maxFloor: number;
+  floorCount: number;
 }
-const Controls: FC<ControlsProps> = ({ maxFloor }) => {
+const Controls: FC<ControlsProps> = ({ floorCount }) => {
   const controls: JSX.Element[] = [];
 
-  for (let i = maxFloor; i >= 0; i--) {
+  for (let i = floorCount - 1; i >= 0; i--) {
     controls.push(
       <Col key={i} className="py-2 px-0">
         <ControlButton floor={i} />

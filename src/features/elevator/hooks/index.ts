@@ -8,6 +8,7 @@ import {
   selectNextFloor,
   selectIsFloorReached,
   elevatorOpenedThenClosed,
+  selectCurrentFloor,
 } from "../slice";
 
 export const useRequestElevator = () => {
@@ -50,6 +51,10 @@ export const useSelectIsFloorReached = () => {
 
 export const useSelectElevatorStatus = () => {
   return useAppSelector((state) => selectElevatorStatus(state));
+};
+
+export const useSelectCurrentFloor = () => {
+  return useAppSelector((state) => selectCurrentFloor(state));
 };
 
 export const useSelectNextFloor = () => {
